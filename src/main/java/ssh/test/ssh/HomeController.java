@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.jcraft.jsch.JSchException;
 
-import ssh.test.ssh.services.SSHTunnel;
+import ssh.test.ssh.services.SSHServiceInterface;
 
 /**
  * Handles requests for the application home page.
@@ -27,11 +28,11 @@ public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
-	private SSHTunnel tunnel;
+	private SSHServiceInterface sshService;
 	
 	@Autowired
-	public void setTunnel(SSHTunnel tunnel) {
-		this.tunnel = tunnel;
+	public void setTunnel(SSHServiceInterface service) {
+		this.sshService = service;
 	}
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -49,10 +50,17 @@ public class HomeController {
 		
 		return "home";
 	}
+	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value="/connect", method = RequestMethod.POST)
 	public void connect() throws JSchException, FileNotFoundException
 	{
-			this.tunnel.connect();
+			this.sshService.connect();
+	}
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value="/disconnect", method = RequestMethod.POST)
+	public void disconnect() 
+	{
+		this.sshService.disconnect();
 	}
 	
 }
